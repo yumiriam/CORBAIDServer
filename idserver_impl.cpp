@@ -53,31 +53,31 @@ char* IdServer_i::generateId(const char* fileName) {
     std::cout << "Connected ok" << std::endl;
     
     /* tenta gerar um UID */
+	char tmpChUid[255], chUid[255];
+    
     bool id_exists = true;
     while (id_exists) {
 		/* gerar o UID a partir do nome e da data atual */
-		char tmpChUid[255], chUid[255];
-		if (strlen(fileName) > 4)
+		if (strlen(fileName) > 4) {
 			strncpy( tmpChUid, fileName, 5 ); // copia 5 primeiros caracteres
-		else
+		} else {
 			strncpy( tmpChUid, fileName, strlen(fileName) );  // copia tudo
-			
+		}
 		sprintf( chUid, "%s%ld", tmpChUid, time(NULL) );
-		/* verificar existencia do UID */
 		
-		/*void printIfAge(DBClientConnection& c, int age) {
-		  auto_ptr<DBClientCursor> cursor =
-			c.query("tutorial.persons", QUERY("age" << age));
-		  while (cursor->more()) {
-			BSONObj p = cursor->next();
-			cout << p.getStringField("name") << endl;
-		  }
-		}*/
-		/* criar objeto BSON para insercao no BD */
-		//BSONObj p = BSON( "_id" << "Joe" << "age" << 33 );
+		/* verificar existencia do UID */		
+		auto_ptr<mongo::DBClientCursor> cursor =
+			conn.query("sdfinal.videos", QUERY("_id" << chUid));
+		if ( !(cursor->more()) ) // encontrou algum resultado
+			id_exists = false;
     }
-    
-    
+
+	/* criar objeto BSON para insercao no BD */
+	mongo::BSONObj video = BSON( "_id" << chUid );
+	/* inserir objeto no banco de dados */
+	conn.insert("sdfinal.videos", video);
+  
+  	return CORBA::string_dup(chUid);  
   } catch( const mongo::DBException &e ) {
     std::cout << "Caught " << e.what() << std::endl;
   }
@@ -87,6 +87,23 @@ char* IdServer_i::generateId(const char* fileName) {
 
 bool IdServer_i::verifyId(const char* id) {
   CORBA::Boolean result = 1;
+  
+  try {
+
+    mongo::DBClientConnection conn;
+    db_connect(&conn);
+    std::cout << "Connected ok" << std::endl;
+    
+	/* verificar existencia do UID */		
+	auto_ptr<mongo::DBClientCursor> cursor =
+		conn.query("sdfinal.videos", QUERY("_id" << id));
+	if ( !(cursor->more()) ) // encontrou algum resultado
+		result = 0;
+	 
+  } catch( const mongo::DBException &e ) {
+    std::cout << "Caught " << e.what() << std::endl;
+  }
+  
   return result;
 }
 

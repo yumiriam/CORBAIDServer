@@ -86,7 +86,7 @@ int main (int argc, char **argv)  {
     MiLissa::IdServer_var serverref = MiLissa::IdServer::_narrow(obj);
 
     //for (CORBA::ULong count=0; count < 10; count++)
-      hello(serverref);
+    hello(serverref);
 
     orb->destroy();
   } catch(CORBA::TRANSIENT&) {
