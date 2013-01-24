@@ -1,0 +1,9 @@
+// to create the stubs and other files use the following command:
+// idlj -fall Hello.idl
+module HelloWorld
+{
+  interface Interface_Hello
+  {
+    string get_msg();
+  };
+};

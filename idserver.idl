@@ -1,0 +1,6 @@
+module MiLissa {
+	interface IdServer {
+		string  generateId(in string fileName);
+		boolean verifyId(in string id);
+	};
+};

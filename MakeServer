@@ -1,0 +1,29 @@
+CC	    = /usr/bin/g++
+CPPFLAGS      = -g -c
+LDFLAGS       = -g
+OMNI_HOME     = /usr/local
+OMNI_INCLUDES = -I$(OMNI_HOME)/include
+OMNI_LIB_DIR  = $(OMNI_HOME)/lib
+OMNIIDL       = $(OMNI_HOME)/bin/omniidl
+INCLUDES      = $(OMNI_INCLUDES)
+LIBS	  = -lomniORB4 -lomnithread -lomniDynamic4 -pthread -lboost_thread-mt -lboost_filesystem -lboost_program_options -lboost_system -lmongoclient
+OBJECTS       = idserver.o idserver_impl.o
+										
+all server: $(OBJECTS)
+	 $(CC) $(LDFLAGS) -o server -L$(OMNI_HOME)/lib $(OBJECTS) $(LIBPATH) $(LIBS)
+										
+idserver.o: idserverSK.cc idserver.hh
+	$(CC) $(CPPFLAGS) -o idserver.o $(INCLUDES) idserverSK.cc
+										
+idserver_impl.o: idserver_impl.cpp idserver.hh
+	$(CC) $(CPPFLAGS) $(INCLUDES) idserver_impl.cpp
+										
+idserverSK.cc: idserver.idl
+	 $(OMNI_HOME)/bin/omniidl -bcxx idserver.idl
+										
+clean clean_all:
+	rm -fr *.o
+	rm -fr core
+	rm -fr *.hh
+	rm -fr *SK.cc
+	rm -fr server

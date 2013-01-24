@@ -1,0 +1,29 @@
+CC	    = /usr/bin/g++
+CPPFLAGS      = -g -c
+LDFLAGS       = -g
+OMNI_HOME     = /usr/local
+OMNI_INCLUDES = -I$(OMNI_HOME)/include
+OMNI_LIB_DIR  = $(OMNI_HOME)/lib
+OMNIIDL       = $(OMNI_HOME)/bin/omniidl
+INCLUDES      = $(OMNI_INCLUDES)
+LIBS	  = -lomniORB4 -lomnithread -lomniDynamic4
+OBJECTS       = idserver.o idserver_clt.o
+	
+all client: $(OBJECTS)
+	$(CC) $(LDFLAGS) -o client idserver_clt.o idserver.o $(LIBS)
+
+idserver_clt.o: idserver_clt.cpp
+	$(CC) $(CPPFLAGS) idserver_clt.cpp
+										
+idserver.o: idserverSK.cc idserver.hh
+	$(CC) $(CPPFLAGS) -o idserver.o idserverSK.cc
+										
+idserverSK.cc: idserver.idl
+	$(OMNI_HOME)/bin/omniidl -bcxx idserver.idl
+										
+clean clean_all:
+	rm -fr *.o
+	rm -fr core
+	rm -fr *.hh
+	rm -fr *SK.cc
+	rm -fr client
