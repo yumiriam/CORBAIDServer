@@ -1,0 +1,12 @@
+How to run:
+
+export OMNIORB_CONFIG=/etc/omniORB.cfg
+sudo omniNames.sh
+
+Cleaning:
+
+make -f MakeServer clean
+
+Building:
+
+make -f MakeServer
